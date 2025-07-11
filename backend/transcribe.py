@@ -8,14 +8,19 @@ from pydub import AudioSegment
 import tempfile
 import os
 
-# Load the Whisper model (tiny for speed/VRAM)
-# This can be loaded globally for efficiency
-model = WhisperModel("tiny", device="cpu", compute_type="int8")
+model = None
+
+def lazy_load_model():
+    global model
+    if model is None:
+        # Load the Whisper model (tiny for speed/VRAM)
+        model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
 SUPPORTED_TYPES = {"audio/wav", "audio/x-wav", "audio/wave", "audio/mp3", "audio/mpeg"}
 
 
 def transcribe_audio(file: UploadFile) -> Dict:
+    lazy_load_model()
     start_time = time.time()
     if file.content_type not in SUPPORTED_TYPES:
         return {"error": f"Unsupported file type: {file.content_type}"}

@@ -1,0 +1,16 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: avatar-backend
+spec:
+  template:
+    spec:
+      containers:
+      - image: gcr.io/<project-id>/avatar-backend
+        resources:
+          limits:
+            memory: 4Gi
+        env:
+        - name: LOG_LEVEL
+          value: INFO
+      timeoutSeconds: 900 

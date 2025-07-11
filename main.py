@@ -10,6 +10,36 @@ from backend.session_manager import get_or_create_session
 
 app = FastAPI()
 
+# --- Lazy model loading flags ---
+models_loaded = {
+    'whisper': False,
+    'tts': False,
+    'avatar': False
+}
+
+def lazy_load_whisper():
+    if not models_loaded['whisper']:
+        transcribe.lazy_load_model()
+        models_loaded['whisper'] = True
+
+def lazy_load_tts():
+    if not models_loaded['tts']:
+        speak.lazy_load_model()
+        models_loaded['tts'] = True
+
+def lazy_load_avatar():
+    if not models_loaded['avatar']:
+        avatar.lazy_load_model()
+        models_loaded['avatar'] = True
+
+@app.post("/warmup")
+def warmup():
+    """Endpoint to pre-load all heavy ML models for cold start mitigation."""
+    lazy_load_whisper()
+    lazy_load_tts()
+    lazy_load_avatar()
+    return {"status": "warmed up"}
+
 # POST /transcribe — speech-to-text (WAV to text)
 @app.post("/transcribe")
 async def transcribe_endpoint(
@@ -20,6 +50,7 @@ async def transcribe_endpoint(
     session_cookie: str = Cookie(None)
 ):
     """Endpoint for speech-to-text (WAV/MP3 to text) with session management."""
+    lazy_load_whisper()
     sid = get_or_create_session(session_id or session_cookie)
     response.headers["X-Session-ID"] = sid
     if not file:
@@ -38,6 +69,7 @@ async def speak_endpoint(
     session_cookie: str = Cookie(None)
 ):
     """Endpoint for text-to-speech (text to WAV) with session management."""
+    lazy_load_tts()
     sid = get_or_create_session(session_id or session_cookie)
     response.headers["X-Session-ID"] = sid
     try:
@@ -65,6 +97,7 @@ async def generate_avatar_endpoint(
     session_cookie: str = Cookie(None)
 ):
     """Endpoint for generating avatar video from audio and image with session management."""
+    lazy_load_avatar()
     sid = get_or_create_session(session_id or session_cookie)
     response.headers["X-Session-ID"] = sid
     if not audio or not image:
