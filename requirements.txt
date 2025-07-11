@@ -8,4 +8,5 @@ torch
 TTS
 scipy
 SadTalker
-opencv-python 
+opencv-python
+python-dotenv 
