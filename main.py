@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 
 # Import backend modules (to be implemented)
@@ -8,10 +8,14 @@ app = FastAPI()
 
 # POST /transcribe — speech-to-text (WAV to text)
 @app.post("/transcribe")
-def transcribe_audio():
-    """Endpoint for speech-to-text (WAV to text)."""
-    # TODO: Implement speech-to-text logic
-    pass
+def transcribe_endpoint(file: UploadFile = File(...)):
+    """Endpoint for speech-to-text (WAV/MP3 to text)."""
+    if not file:
+        return JSONResponse(content={"error": "No file uploaded."}, status_code=400)
+    result = transcribe.transcribe_audio(file)
+    if "error" in result:
+        return JSONResponse(content=result, status_code=400)
+    return JSONResponse(content=result)
 
 # POST /speak — text-to-speech (text to WAV)
 @app.post("/speak")

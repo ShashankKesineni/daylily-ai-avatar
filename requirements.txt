@@ -1,2 +1,5 @@
 fastapi
-uvicorn 
+uvicorn
+faster-whisper
+pydub
+ffmpeg-python 
