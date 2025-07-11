@@ -2,4 +2,8 @@ fastapi
 uvicorn
 faster-whisper
 pydub
-ffmpeg-python 
+ffmpeg-python
+bark
+torch
+TTS
+scipy 

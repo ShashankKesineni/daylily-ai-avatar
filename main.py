@@ -1,5 +1,5 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, UploadFile, File, Request
+from fastapi.responses import JSONResponse, StreamingResponse
 
 # Import backend modules (to be implemented)
 from backend import transcribe, speak, avatar
@@ -19,10 +19,22 @@ def transcribe_endpoint(file: UploadFile = File(...)):
 
 # POST /speak — text-to-speech (text to WAV)
 @app.post("/speak")
-def speak_text():
+async def speak_endpoint(request: Request):
     """Endpoint for text-to-speech (text to WAV)."""
-    # TODO: Implement text-to-speech logic
-    pass
+    try:
+        data = await request.json()
+        text = data.get("text") if data else None
+        if not text or not text.strip():
+            return JSONResponse(content={"error": "Missing or empty 'text' field."}, status_code=400)
+        wav_bytes, latency = speak.generate_speech(text)
+        headers = {"X-Latency": f"{latency}s"}
+        return StreamingResponse(
+            iter([wav_bytes]),
+            media_type="audio/wav",
+            headers=headers
+        )
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 # POST /generate-avatar — audio+image to video
 @app.post("/generate-avatar")
