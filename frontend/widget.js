@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded', function () {
+console.log("AI Avatar Widget JS loaded");
 // AI Avatar Chat Widget for Shopify
 // (c) 2024. MIT License. See README for usage and config.
 (function () {
@@ -290,4 +292,5 @@
 
   // --- Expose for debugging ---
   window.AI_AVATAR_CHAT_WIDGET = { open: () => togglePopup(true) };
-})(); 
+})();
+}); 

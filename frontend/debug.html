@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Connection</title>
+</head>
+<body>
+    <h1>Backend Connection Debug</h1>
+    <button onclick="testConnection()">Test Backend Connection</button>
+    <button onclick="testTranscription()">Test Transcription</button>
+    <div id="results"></div>
+
+    <script>
+        const BACKEND_URL = "http://localhost:8000";
+        
+        function testConnection() {
+            fetch(`${BACKEND_URL}/status`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('results').innerHTML += `<p>✅ Status: ${JSON.stringify(data)}</p>`;
+                })
+                .catch(error => {
+                    document.getElementById('results').innerHTML += `<p>❌ Error: ${error.message}</p>`;
+                });
+        }
+        
+        function testTranscription() {
+            // Create a minimal test audio file
+            const testData = new Uint8Array([82, 73, 70, 70, 36, 0, 0, 0, 87, 65, 86, 69, 102, 109, 116, 32, 16, 0, 0, 0, 1, 0, 1, 0, 68, 172, 0, 0, 136, 88, 1, 0, 2, 0, 16, 0, 100, 97, 116, 97, 0, 0, 0, 0]);
+            const testBlob = new Blob([testData], { type: 'audio/wav' });
+            
+            const formData = new FormData();
+            formData.append("audio", testBlob, "test.wav");
+            
+            fetch(`${BACKEND_URL}/transcribe`, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('results').innerHTML += `<p>✅ Transcription: ${JSON.stringify(data)}</p>`;
+            })
+            .catch(error => {
+                document.getElementById('results').innerHTML += `<p>❌ Transcription Error: ${error.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html> 

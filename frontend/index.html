@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daylily AI Avatar</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div id="app-container">
+        <header>
+            <img src="assets/logo.svg" alt="Daylily Logo" id="logo">
+            <h1>Daylily AI Avatar</h1>
+        </header>
+        <main>
+            <div id="chat-window">
+                <div id="messages"></div>
+            </div>
+            <div id="avatar-section">
+                <video id="avatar-video" width="360" height="202" poster="assets/avatar-placeholder.svg" controls autoplay muted loop></video>
+            </div>
+            <form id="input-form">
+                <input type="text" id="text-input" placeholder="Type your message..." autocomplete="off" required />
+                <button type="submit" id="send-btn">Send</button>
+                <button type="button" id="mic-btn" title="Hold to talk">
+                    <span id="mic-icon">🎤</span>
+                </button>
+            </form>
+            <div id="status-bar">
+                <span id="latency-indicator"></span>
+                <span id="error-message"></span>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 
