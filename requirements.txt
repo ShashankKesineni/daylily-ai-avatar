@@ -6,4 +6,6 @@ ffmpeg-python
 bark
 torch
 TTS
-scipy 
+scipy
+SadTalker
+opencv-python 
