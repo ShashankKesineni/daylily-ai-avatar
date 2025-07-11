@@ -9,4 +9,5 @@ TTS
 scipy
 SadTalker
 opencv-python
-python-dotenv 
+python-dotenv
+httpx 
