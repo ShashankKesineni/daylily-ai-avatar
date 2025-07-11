@@ -10,4 +10,6 @@ scipy
 SadTalker
 opencv-python
 python-dotenv
-httpx 
+httpx
+psutil
+GPUtil 
