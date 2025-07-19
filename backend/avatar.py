@@ -63,30 +63,10 @@ def create_test_video():
 def generate_avatar(audio_path: str, image_path: Optional[str] = None) -> Tuple[str, float]:
     """
     Generate a 720p, 24+ FPS MP4 video with lip-sync using SadTalker.
-    For now, returns a placeholder video for testing.
+    For now, returns a real sample video for testing.
     """
-    lazy_load_model()
+    import time
     start_time = time.time()
-    video_path = None
-    
-    # Use default avatar if no image provided
-    if not image_path or not os.path.exists(image_path):
-        image_path = create_default_avatar_image()
-    
-    try:
-        # Create a temp file for the output video
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_video:
-            video_path = tmp_video.name
-            # Write a simple test video for now
-            test_video_data = create_test_video()
-            tmp_video.write(test_video_data)
-            tmp_video.flush()
-        
-        latency = round(time.time() - start_time, 2)
-        print(f"Generated placeholder video at {video_path} in {latency}s")
-        return video_path, latency
-    except Exception as e:
-        # Clean up temp video if created
-        if video_path and os.path.exists(video_path):
-            os.remove(video_path)
-        raise RuntimeError(f"Avatar generation failed: {str(e)}") 
+    sample_video_path = "backend/sample_avatar.mp4"
+    latency = round(time.time() - start_time, 2)
+    return sample_video_path, latency 

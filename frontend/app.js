@@ -234,4 +234,21 @@ function showError(msg) {
 }
 
 // Initial greeting
-addMessage("Hi! I'm Daylily AI Avatar. How can I help you today?", "bot"); 
+addMessage("Hi! I'm Daylily AI Avatar. How can I help you today?", "bot");
+
+// Add demo mode banner to the top of the page
+window.addEventListener('DOMContentLoaded', function() {
+  const banner = document.createElement('div');
+  banner.textContent = 'Demo Mode: Avatar video is a placeholder. Real AI video coming soon!';
+  banner.style.background = '#ffecb3';
+  banner.style.color = '#333';
+  banner.style.padding = '12px';
+  banner.style.textAlign = 'center';
+  banner.style.fontWeight = 'bold';
+  banner.style.fontSize = '1.1em';
+  banner.style.borderBottom = '2px solid #ffc107';
+  banner.style.zIndex = '1000';
+  banner.style.position = 'sticky';
+  banner.style.top = '0';
+  document.body.prepend(banner);
+}); 

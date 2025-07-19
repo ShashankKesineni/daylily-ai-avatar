@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Request, Form, Header, Cookie, Response, Query
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import tempfile
@@ -117,36 +117,26 @@ async def generate_avatar_endpoint(
     response.headers["X-Session-ID"] = sid
     if not audio:
         return JSONResponse(content={"error": "Missing audio file."}, status_code=400)
-    # Save audio file to temp location
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_audio:
         try:
             shutil.copyfileobj(audio.file, tmp_audio)
             tmp_audio.flush()
             audio_path = tmp_audio.name
-            
-            # Handle image if provided
             image_path = None
             if image:
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_image:
-                    # Accept both PNG and JPG
                     ext = ".jpg" if image.content_type in ["image/jpeg", "image/jpg"] else ".png"
                     tmp_image.close()
                     with open(tmp_image.name, "wb") as img_out:
                         shutil.copyfileobj(image.file, img_out)
                     image_path = tmp_image.name
-            
-            # Generate video
-            print(f"Generating avatar with audio: {audio_path}, image: {image_path}")  # Debug log
             video_path, latency = avatar.generate_avatar(audio_path, image_path)
             headers = {"X-Latency": f"{latency}s", "X-Session-ID": sid}
-            
-            # For placeholder, return the content directly
             if video_path and os.path.exists(video_path):
-                with open(video_path, "rb") as f:
-                    video_content = f.read()
-                return StreamingResponse(
-                    iter([video_content]), 
-                    media_type="video/mp4", 
+                return FileResponse(
+                    video_path,
+                    media_type="video/mp4",
+                    filename="avatar.mp4",
                     headers=headers
                 )
             else:
@@ -154,19 +144,12 @@ async def generate_avatar_endpoint(
         except Exception as e:
             return JSONResponse(content={"error": str(e)}, status_code=500)
         finally:
-            # Clean up temp files
             temp_files = [tmp_audio.name]
             if 'image_path' in locals() and image_path:
                 temp_files.append(image_path)
             for path in temp_files:
                 if path and os.path.exists(path):
                     os.remove(path)
-            # Clean up video file if generated
-            try:
-                if 'video_path' in locals() and video_path and os.path.exists(video_path):
-                    os.remove(video_path)
-            except Exception:
-                pass
 
 # GET /status — returns { "status": "ok" }
 @app.get("/status")
